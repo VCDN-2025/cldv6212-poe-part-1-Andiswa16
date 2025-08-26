@@ -1,27 +1,32 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using ABC.Retail.Data;
-using ABC.Retail.Services;
-namespace ABC.Retail
+﻿using Azure.Storage.Blobs;
+using Azure.Data.Tables;
+using ABC_Retail_.Services;
+
+namespace ABC_Retail_
 {
     public class Program
     {
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            builder.Services.AddDbContext<ABCRetailContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("ABCRetailContext") ?? throw new InvalidOperationException("Connection string 'ABCRetailContext' not found.")));
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
-            builder.Services.AddSingleton(sp =>
-            {
-                var connectionString = builder.Configuration.GetConnectionString("AzureBlobStorage");
-                return new BlobService(connectionString);
-            });
 
+            // ✅ Azure Storage Connection String
+            string azureStorageConnectionString = builder.Configuration.GetConnectionString("AzureStorage");
 
+            // ✅ Register Azure Blob Service
+            builder.Services.AddSingleton(x => new BlobServiceClient(azureStorageConnectionString));
 
+            // ✅ Register Azure Table Service
+            builder.Services.AddSingleton(x => new TableServiceClient(azureStorageConnectionString));
+
+            // ✅ Register your custom services so DI can inject them
+            builder.Services.AddSingleton<TablesStorageService>();
+            builder.Services.AddSingleton<FilesStorageService>();
+            builder.Services.AddSingleton<BlobStorageService>();
+            builder.Services.AddSingleton<QueuesStorageService>();
 
             var app = builder.Build();
 
@@ -29,7 +34,6 @@ namespace ABC.Retail
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
