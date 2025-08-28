@@ -1,0 +1,120 @@
+﻿@model IEnumerable<ABC_Retail_.Models.Product>
+
+@{
+    ViewData["Title"] = "Products";
+}
+
+<style>
+    body {
+        background: linear-gradient(to right, #ffdde1, #ee9ca7); /* pink gradient */
+        min-height: 100vh;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    h2 {
+        color: #b3005e; /* dark pink for headings */
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+
+    .btn-primary {
+        background-color: #ff4da6;
+        border-color: #ff4da6;
+    }
+
+        .btn-primary:hover {
+            background-color: #e60073;
+            border-color: #e60073;
+        }
+
+    .btn-info {
+        background-color: #ff99cc;
+        border-color: #ff99cc;
+        color: #fff;
+    }
+
+        .btn-info:hover {
+            background-color: #ff66b2;
+            border-color: #ff66b2;
+        }
+
+    .btn-warning {
+        background-color: #ffb3d9;
+        border-color: #ffb3d9;
+        color: #fff;
+    }
+
+        .btn-warning:hover {
+            background-color: #ff80bf;
+            border-color: #ff80bf;
+        }
+
+    .btn-danger {
+        background-color: #ff3385;
+        border-color: #ff3385;
+    }
+
+        .btn-danger:hover {
+            background-color: #e6005c;
+            border-color: #e6005c;
+        }
+
+    table {
+        background: #fff0f5; /* lavender pink table */
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    thead {
+        background-color: #ff99cc;
+        color: white;
+    }
+
+    th, td {
+        text-align: center;
+        vertical-align: middle;
+    }
+</style>
+
+<h2>Products</h2>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">MAKE A PURCHASE</a>
+    <a asp-controller="Order" asp-action="Index" class="btn btn-primary">VIEW ORDER</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Category</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Price</th>
+            <th>Image</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var product in Model)
+        {
+            <tr>
+                <td>@product.Category</td>
+                <td>@product.ProductName</td>
+                <td>@product.Description</td>
+                <td>@product.Price.ToString("C")</td>
+                <td>
+                    @if (!string.IsNullOrEmpty(product.ImageUrl))
+                    {
+                        <img src="@product.ImageUrl" width="100" alt="@product.ProductName" />
+                    }
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-rowKey="@product.RowKey" class="btn btn-info btn-sm">Details</a>
+                    <a asp-action="Edit" asp-route-rowKey="@product.RowKey" class="btn btn-warning btn-sm">Edit</a>
+                    <a asp-action="Delete" asp-route-rowKey="@product.RowKey" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
